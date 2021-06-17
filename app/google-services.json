@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "5130610462",
+    "project_id": "lollypops-7eeed",
+    "storage_bucket": "lollypops-7eeed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:5130610462:android:b18b09e8b3faed66824b0f",
+        "android_client_info": {
+          "package_name": "com.hemant239.lollypops"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "5130610462-te5jvcgis2uhkdjr6vnefvil2la47ha8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANMjxSTHCLUqkJBA_sKcgJ0IWtRwEvtVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "5130610462-te5jvcgis2uhkdjr6vnefvil2la47ha8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

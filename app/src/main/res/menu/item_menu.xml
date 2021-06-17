@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/deleteMenu"
+        app:showAsAction="never"
+        android:title="🗑️  Delete" />
+
+    <item
+        android:id="@+id/changeDetailsMenu"
+        app:showAsAction="never"
+        android:title="♻️  Change Details"
+        android:icon="@drawable/ic_baseline_add_24"/>
+
+</menu>

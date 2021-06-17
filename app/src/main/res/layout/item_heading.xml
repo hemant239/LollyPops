@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="12dp"
+    android:paddingBottom="6dp"
+    android:paddingStart="3dp"
+    android:paddingEnd="5dp"
+    android:orientation="vertical">
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+
+        <LinearLayout
+            android:layout_width="60dp"
+            android:layout_height="70dp"
+            android:background="@drawable/custom_image_background"
+            android:layout_gravity="center"
+            android:layout_margin="3dp"
+            android:layout_weight="0.15"
+            android:id="@+id/headingImageLayout"
+            >
+
+
+            <ImageView
+                android:id="@+id/headingImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_baseline_person_24"
+                android:background="@drawable/custom_image_background"
+                android:scaleType="fitXY"
+                android:contentDescription="profile image"
+                />
+
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="0.3">
+            <TextView
+                android:id="@+id/headingName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="heading Name"
+                android:textSize="17dp"
+                android:textStyle="bold"
+                android:maxWidth="250dp"
+                />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/headingCreatorBy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Created By :"
+                    android:layout_marginTop="3dp"
+                    android:textSize="12dp"/>
+
+                <TextView
+                    android:id="@+id/headingCreatorName"
+                    android:layout_width="58dp"
+                    android:layout_height="18dp"
+                    android:layout_marginTop="3dp"
+                    android:text="TextView"
+                    android:textSize="12dp"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/headingDateOn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Created On :"
+                    android:layout_marginTop="3dp"
+                    android:textSize="12dp"/>
+
+
+
+                <TextView
+                    android:id="@+id/headingCreatedDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="fkenfknlnkdlekfooenfone"
+                    android:textSize="12dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/headingMenuButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/ic_baseline_more_vert_24"
+            android:layout_gravity="center_vertical|end"
+            />
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/headingDesc"
+        android:layout_marginTop="3dp"
+        android:textColor="#03A9F4"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/linearLayout"
+        android:layout_margin="5dp"
+        android:padding="3dp"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/wishListButton"
+            android:layout_width="176dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTintMode="add"
+            android:background="@null"
+            android:text="WishList" />
+
+        <Button
+            android:id="@+id/completedButton"
+            android:layout_width="176dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:text="Completed" />
+    </LinearLayout>
+
+</LinearLayout>
