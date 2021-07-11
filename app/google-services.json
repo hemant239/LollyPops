@@ -1,18 +1,27 @@
 {
   "project_info": {
     "project_number": "5130610462",
+    "firebase_url": "https://lollypops-7eeed-default-rtdb.firebaseio.com",
     "project_id": "lollypops-7eeed",
     "storage_bucket": "lollypops-7eeed.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:5130610462:android:b18b09e8b3faed66824b0f",
+        "mobilesdk_app_id": "1:5130610462:android:e00e3a05cbb84b6a824b0f",
         "android_client_info": {
           "package_name": "com.hemant239.lollypops"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "5130610462-9ojqr9v0p2s844r5l15fb2ke84f66ih7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hemant239.lollypops",
+            "certificate_hash": "7dfbcde4ca26c22e7af0f23a9ba4446202c51602"
+          }
+        },
         {
           "client_id": "5130610462-te5jvcgis2uhkdjr6vnefvil2la47ha8.apps.googleusercontent.com",
           "client_type": 3

@@ -114,7 +114,7 @@ public class NewUserDetailsActivity extends AppCompatActivity {
             }
         }
         else{
-            Toast.makeText(getApplicationContext(),"something went wrong, please try again later onActivity result",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"something went wrong, please try again later",Toast.LENGTH_SHORT).show();
         }
     }
 
