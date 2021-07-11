@@ -13,7 +13,7 @@ public class Item implements Serializable {
             description,
             imageUri,
             timeAdded,
-            timeCompleted;;
+            timeCompleted;
 
     public Item() {
         id = "";

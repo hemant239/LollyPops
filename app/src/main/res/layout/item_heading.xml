@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="12dp"
@@ -71,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:text="Created By :"
                     android:layout_marginTop="3dp"
-                    android:textSize="12dp"/>
+                    android:textSize="12sp"/>
 
                 <TextView
                     android:id="@+id/headingCreatorName"
@@ -79,7 +76,7 @@
                     android:layout_height="18dp"
                     android:layout_marginTop="3dp"
                     android:text="TextView"
-                    android:textSize="12dp"/>
+                    android:textSize="12sp"/>
 
             </LinearLayout>
             <LinearLayout
@@ -93,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:text="Created On :"
                     android:layout_marginTop="3dp"
-                    android:textSize="12dp"/>
+                    android:textSize="12sp"/>
 
 
 
@@ -103,7 +100,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
                     android:text="fkenfknlnkdlekfooenfone"
-                    android:textSize="12dp"/>
+                    android:textSize="12sp"/>
 
             </LinearLayout>
 
@@ -147,7 +144,8 @@
             android:layout_weight="1"
             android:backgroundTintMode="add"
             android:background="@null"
-            android:text="WishList" />
+            android:text="WishList"
+            style="?android:attr/buttonBarButtonStyle" />
 
         <Button
             android:id="@+id/completedButton"
@@ -155,7 +153,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
-            android:text="Completed" />
+            android:text="Completed"
+            style="?android:attr/buttonBarButtonStyle" />
     </LinearLayout>
 
 </LinearLayout>

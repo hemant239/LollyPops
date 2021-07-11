@@ -32,12 +32,9 @@ public class LoadingActivity extends AppCompatActivity {
 
 
         context=this;
-        mCancelUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(RESULT_OK);
-                finish();
-            }
+        mCancelUpload.setOnClickListener(v -> {
+            setResult(RESULT_OK);
+            finish();
         });
 
     }

@@ -1,5 +1,13 @@
 package com.hemant239.lollypops;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -7,17 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.annotation.SuppressLint;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,17 +26,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hemant239.lollypops.adapters.HeadingAdapter;
 import com.hemant239.lollypops.objects.Heading;
-import com.hemant239.lollypops.objects.Item;
 import com.hemant239.lollypops.objects.User;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
-import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -76,12 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         getHeadings();
 
-        addNewHeading.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createDialogueBox();
-            }
-        });
+        addNewHeading.setOnClickListener(v -> createDialogueBox());
 
 
 
@@ -104,35 +93,27 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setView(linearLayout,5,5,5,5);
 
 
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "CREATE", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name=editTextName.getText().toString();
-                String des=editTextDes.getText().toString();
-                if(name.equals("")){
-                    Toast.makeText(getApplicationContext(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    final Date date = Calendar.getInstance().getTime();
-                    SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("EEE, MMM dd, yyyy");
-                    String dateTemp = simpleDateFormatDate.format(date);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "CREATE", (dialog, which) -> {
+            String name=editTextName.getText().toString();
+            String des=editTextDes.getText().toString();
+            if(name.equals("")){
+                Toast.makeText(getApplicationContext(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
+            }
+            else{
+                final Date date = Calendar.getInstance().getTime();
+                SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("EEE, MMM dd, yyyy");
+                String dateTemp = simpleDateFormatDate.format(date);
 
-                    DatabaseReference headingDB=FirebaseDatabase.getInstance().getReference().child("Headings");
-                    String headingID=headingDB.push().getKey();
+                DatabaseReference headingDB=FirebaseDatabase.getInstance().getReference().child("Headings");
+                String headingID=headingDB.push().getKey();
 
-                    Heading heading=new Heading(headingID,name,curUser.getName(),dateTemp,String.valueOf(date.getTime()),des,"");
+                Heading heading=new Heading(headingID,name,curUser.getName(),dateTemp,String.valueOf(date.getTime()),des,"");
 
-                    assert headingID != null;
-                    headingDB.child(headingID).setValue(heading);
-                }
+                assert headingID != null;
+                headingDB.child(headingID).setValue(heading);
             }
         });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.dismiss();
-            }
-        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", (dialog, which) -> alertDialog.dismiss());
 
         alertDialog.show();
     }
@@ -147,14 +128,15 @@ public class MainActivity extends AppCompatActivity {
                     headingListAdapter.notifyItemInserted(headings.size()-1);
 
 
-                    FirebaseDatabase.getInstance().getReference().child("Headings").child(snapshot.getKey()).child("imageUri").addValueEventListener(new ValueEventListener() {
+                    FirebaseDatabase.getInstance().getReference().child("Headings").child(Objects.requireNonNull(snapshot.getKey())).child("imageUri").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot imageSnapshot) {
                             if(imageSnapshot.exists()){
+                                assert heading != null;
                                 Heading tempHeading=new Heading(heading.getId());
                                 int indexOfItem=headings.indexOf(tempHeading);
                                 if(indexOfItem>-1){
-                                    headings.get(indexOfItem).setImageUri(imageSnapshot.getValue().toString());
+                                    headings.get(indexOfItem).setImageUri(Objects.requireNonNull(imageSnapshot.getValue()).toString());
                                     headingListAdapter.notifyItemChanged(indexOfItem);
                                 }
                             }
@@ -217,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getUsers() {
         DatabaseReference mUserDb=FirebaseDatabase.getInstance().getReference().child("Users");
-        final String curUserKey=FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String curUserKey= Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         mUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -227,10 +209,10 @@ public class MainActivity extends AppCompatActivity {
 
                         if(curUserKey.equals(childSnapshot.getKey())){
 
-                            curUser= (User) childSnapshot.getValue(User.class);
+                            curUser= childSnapshot.getValue(User.class);
                         }
                         else{
-                            boss= (User) childSnapshot.getValue(User.class);
+                            boss= childSnapshot.getValue(User.class);
                         }
 
                     }
@@ -246,11 +228,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void sortHeadingsViaDate() {
-        Collections.sort(headings,(Heading heading1,Heading heading2)-> heading1.getTimestamp().compareToIgnoreCase(heading2.getTimestamp()));
+        headings.sort((Heading heading1, Heading heading2) -> heading1.getTimestamp().compareToIgnoreCase(heading2.getTimestamp()));
         headingListAdapter.notifyDataSetChanged();
     }
     private void sortHeadingsViaNames() {
-        Collections.sort(headings,(Heading heading1,Heading heading2)-> heading1.getName().compareToIgnoreCase(heading2.getName()));
+        headings.sort((Heading heading1, Heading heading2) -> heading1.getName().compareToIgnoreCase(heading2.getName()));
         headingListAdapter.notifyDataSetChanged();
     }
     private void sortAscendingDescending() {

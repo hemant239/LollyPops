@@ -1,5 +1,17 @@
 package com.hemant239.lollypops;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -9,35 +21,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.bitmap.BitmapImageDecoderResourceDecoder;
-import com.bumptech.glide.load.resource.bitmap.InputStreamBitmapImageDecoderResourceDecoder;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.target.ViewTarget;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -45,24 +29,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.hemant239.lollypops.adapters.HeadingAdapter;
 import com.hemant239.lollypops.adapters.ItemAdapter;
-import com.hemant239.lollypops.objects.Heading;
 import com.hemant239.lollypops.objects.Item;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 public class SpecificHeadingActivity extends AppCompatActivity {
 
@@ -120,17 +95,14 @@ public class SpecificHeadingActivity extends AppCompatActivity {
             mHeadingImage.setClipToOutline(true);
             Glide.with(getApplicationContext()).load(Uri.parse(headingImage)).into(mHeadingImage);
         }
-        mHeadingImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String path="Headings/"+headingKey+"/imageUri";
-                Intent intent =new Intent(getApplicationContext(), ImageViewActivity.class);
-                intent.putExtra("URI",headingImage);
-                intent.putExtra("id",headingKey);
-                intent.putExtra("path",path);
-                startActivity(intent);
+        mHeadingImage.setOnClickListener(v -> {
+            String path="Headings/"+headingKey+"/imageUri";
+            Intent intent =new Intent(getApplicationContext(), ImageViewActivity.class);
+            intent.putExtra("URI",headingImage);
+            intent.putExtra("id",headingKey);
+            intent.putExtra("path",path);
+            startActivity(intent);
 
-            }
         });
 
 
@@ -144,12 +116,7 @@ public class SpecificHeadingActivity extends AppCompatActivity {
         
 
         final String finalListName = listName;
-        addNewItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createDialogueBox(finalListName);
-            }
-        });
+        addNewItem.setOnClickListener(v -> createDialogueBox(finalListName));
 
         getItems(listName);
 
@@ -170,35 +137,28 @@ public class SpecificHeadingActivity extends AppCompatActivity {
         final AlertDialog alertDialog=new AlertDialog.Builder(this).setTitle("NEW ELEMENT").create();
         alertDialog.setView(linearLayout,5,5,5,5);
 
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "CREATE", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name=editTextName.getText().toString();
-                String des=editTextDes.getText().toString();
-                if(name.equals("")){
-                    Toast.makeText(getApplicationContext(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    final Date date = Calendar.getInstance().getTime();
-                    SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("EEE, MMM dd, yyyy");
-                    String dateTemp = simpleDateFormatDate.format(date);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "CREATE", (dialog, which) -> {
+            String name=editTextName.getText().toString();
+            String des=editTextDes.getText().toString();
+            if(name.equals("")){
+                Toast.makeText(getApplicationContext(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
+            }
+            else{
+                final Date date = Calendar.getInstance().getTime();
+                SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("EEE, MMM dd, yyyy");
+                String dateTemp = simpleDateFormatDate.format(date);
 
-                    DatabaseReference itemDB=FirebaseDatabase.getInstance().getReference().child("Headings").child(headingKey).child(listName);
-                    String itemId=itemDB.push().getKey();
+                DatabaseReference itemDB=FirebaseDatabase.getInstance().getReference().child("Headings").child(headingKey).child(listName);
+                String itemId=itemDB.push().getKey();
 
-                    Item item=new Item(itemId,name,MainActivity.curUser.getName(),dateTemp,"",des,"",String.valueOf(date.getTime()),"");
-                    itemDB.child(itemId).setValue(item);
+                Item item=new Item(itemId,name,MainActivity.curUser.getName(),dateTemp,"",des,"",String.valueOf(date.getTime()),"");
+                assert itemId != null;
+                itemDB.child(itemId).setValue(item);
 
 
-                }
             }
         });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.dismiss();
-            }
-        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", (dialog, which) -> alertDialog.dismiss());
 
         alertDialog.show();
     }
@@ -212,14 +172,15 @@ public class SpecificHeadingActivity extends AppCompatActivity {
                     items.add(item);
                     itemListAdapter.notifyItemInserted(items.size()-1);
                     FirebaseDatabase.getInstance().getReference().child("Headings").child(headingKey)
-                            .child(listName).child(snapshot.getKey()).child("imageUri").addValueEventListener(new ValueEventListener() {
+                            .child(listName).child(Objects.requireNonNull(snapshot.getKey())).child("imageUri").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot imageSnapshot) {
                             if(imageSnapshot.exists()){
+                                assert item != null;
                                 Item tempItem=new Item(item.getId());
                                 int indexOfItem=items.indexOf(tempItem);
                                 if(indexOfItem>-1){
-                                    items.get(indexOfItem).setImageUri(imageSnapshot.getValue().toString());
+                                    items.get(indexOfItem).setImageUri(Objects.requireNonNull(imageSnapshot.getValue()).toString());
                                     itemListAdapter.notifyItemChanged(indexOfItem);
                                 }
                             }
@@ -285,15 +246,15 @@ public class SpecificHeadingActivity extends AppCompatActivity {
         itemListAdapter.notifyDataSetChanged();
     }
     private void sortItemsViaCompletionDate() {
-        Collections.sort(items,(Item item1,Item item2)->item1.getTimeCompleted().compareToIgnoreCase(item2.getTimeCompleted()));
+        items.sort((Item item1, Item item2) -> item1.getTimeCompleted().compareToIgnoreCase(item2.getTimeCompleted()));
         itemListAdapter.notifyDataSetChanged();
     }
     private void sortItemsViaCreatedDate() {
-        Collections.sort(items,(Item item1,Item item2)->item1.getTimeAdded().compareToIgnoreCase(item2.getTimeAdded()));
+        items.sort((Item item1, Item item2) -> item1.getTimeAdded().compareToIgnoreCase(item2.getTimeAdded()));
         itemListAdapter.notifyDataSetChanged();
     }
     private void sortItemsViaNames() {
-        Collections.sort(items,(Item item1,Item item2)->item1.getName().compareToIgnoreCase(item2.getName()));
+        items.sort((Item item1, Item item2) -> item1.getName().compareToIgnoreCase(item2.getName()));
         itemListAdapter.notifyDataSetChanged();
     }
 

@@ -74,13 +74,10 @@ public class UserDetailsActivity extends AppCompatActivity {
         if(!userImage.equals("")) {
             mUserImage.setClipToOutline(true);
             Glide.with(this).load(Uri.parse(userImage)).into(mUserImage);
-            mUserImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getApplicationContext(), ImageViewActivity.class);
-                    intent.putExtra("URI", userImage);
-                    startActivity(intent);
-                }
+            mUserImage.setOnClickListener(v -> {
+                Intent intent = new Intent(getApplicationContext(), ImageViewActivity.class);
+                intent.putExtra("URI", userImage);
+                startActivity(intent);
             });
         }
 
@@ -95,19 +92,9 @@ public class UserDetailsActivity extends AppCompatActivity {
             mUpdateDetails.setVisibility(View.VISIBLE);
             mChangePhoto.setVisibility(View.VISIBLE);
 
-            mChangePhoto.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    openGallery();
-                }
-            });
+            mChangePhoto.setOnClickListener(v -> openGallery());
 
-            mUpdateDetails.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    updateDetails();
-                }
-            });
+            mUpdateDetails.setOnClickListener(v -> updateDetails());
 
         }
     }
@@ -155,21 +142,12 @@ public class UserDetailsActivity extends AppCompatActivity {
                     intent.putExtra("message", "Your Image is being uploaded \\n please wait");
                     intent.putExtra("isNewUser", false);
                     startActivityForResult(intent, CANCEL_UPLOAD_TASK);
-                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            profileStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    mUserDb.child("profileImageUri").setValue(uri.toString());
-                                    MainActivity.curUser.setProfileImageUri(uri.toString());
-                                    Glide.with(getApplicationContext()).load(uri).into(mUserImage);
-                                    ((LoadingActivity) LoadingActivity.context).finish();
-                                }
-                            });
-
-                        }
-                    });
+                    uploadTask.addOnSuccessListener(taskSnapshot -> profileStorage.getDownloadUrl().addOnSuccessListener(uri -> {
+                        mUserDb.child("profileImageUri").setValue(uri.toString());
+                        MainActivity.curUser.setProfileImageUri(uri.toString());
+                        Glide.with(getApplicationContext()).load(uri).into(mUserImage);
+                        ((LoadingActivity) LoadingActivity.context).finish();
+                    }));
 
                     break;
 

@@ -1,11 +1,9 @@
 package com.hemant239.lollypops.adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,19 +19,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.hemant239.lollypops.ImageViewActivity;
 import com.hemant239.lollypops.MainActivity;
 import com.hemant239.lollypops.R;
 import com.hemant239.lollypops.SpecificHeadingActivity;
 import com.hemant239.lollypops.objects.Heading;
-import com.hemant239.lollypops.objects.Item;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class HeadingAdapter extends RecyclerView.Adapter<HeadingAdapter.ViewHolder>{
 
@@ -75,85 +68,67 @@ public class HeadingAdapter extends RecyclerView.Adapter<HeadingAdapter.ViewHold
 //            holder.headingImageLayout.setVisibility(View.GONE);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(holder.linearLayout.getVisibility()==View.GONE){
-                    holder.linearLayout.setVisibility(View.VISIBLE);
-                    holder.description.setVisibility(View.VISIBLE);
+        holder.itemView.setOnClickListener(v -> {
+            if(holder.linearLayout.getVisibility()==View.GONE){
+                holder.linearLayout.setVisibility(View.VISIBLE);
+                holder.description.setVisibility(View.VISIBLE);
+            }
+            else{
+                holder.linearLayout.setVisibility(View.GONE);
+                holder.description.setVisibility(View.GONE);
+            }
+        });
+
+
+        holder.wishList.setOnClickListener(v -> {
+            Intent intent=new Intent(context, SpecificHeadingActivity.class);
+            intent.putExtra("isWishList",true);
+            intent.putExtra("headingName",heading.getName());
+            intent.putExtra("headingImage",heading.getImageUri());
+            intent.putExtra("headingKey",heading.getId());
+            context.startActivity(intent);
+        });
+        holder.completed.setOnClickListener(v -> {
+            Intent intent=new Intent(context, SpecificHeadingActivity.class);
+            intent.putExtra("isWishList",false);
+            intent.putExtra("headingName",heading.getName());
+            intent.putExtra("headingImage",heading.getImageUri());
+            intent.putExtra("headingKey",heading.getId());
+            context.startActivity(intent);
+        });
+
+
+        holder.image.setOnClickListener(v -> {
+            String path="Headings/"+heading.getId()+"/imageUri";
+            Intent intent =new Intent(context, ImageViewActivity.class);
+            intent.putExtra("URI",heading.getImageUri());
+            intent.putExtra("id",heading.getId());
+            intent.putExtra("path",path);
+            context.startActivity(intent);
+        });
+
+
+
+
+        holder.menuButton.setOnClickListener(v -> {
+            PopupMenu popupMenu=new PopupMenu(context,holder.menuButton);
+            popupMenu.inflate(R.menu.item_menu);
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                switch(menuItem.getItemId()){
+
+                    case R.id.deleteMenu:
+                        createDialogForDelete(heading,position);
+                        break;
+
+                    case R.id.changeDetailsMenu:
+                        createDialogForChangeDetails(heading,position);
+                        break;
+
                 }
-                else{
-                    holder.linearLayout.setVisibility(View.GONE);
-                    holder.description.setVisibility(View.GONE);
-                }
-            }
-        });
+                return false;
+            });
 
-
-        holder.wishList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(context, SpecificHeadingActivity.class);
-                intent.putExtra("isWishList",true);
-                intent.putExtra("headingName",heading.getName());
-                intent.putExtra("headingImage",heading.getImageUri());
-                intent.putExtra("headingKey",heading.getId());
-                context.startActivity(intent);
-            }
-        });
-        holder.completed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(context, SpecificHeadingActivity.class);
-                intent.putExtra("isWishList",false);
-                intent.putExtra("headingName",heading.getName());
-                intent.putExtra("headingImage",heading.getImageUri());
-                intent.putExtra("headingKey",heading.getId());
-                context.startActivity(intent);
-            }
-        });
-
-
-        holder.image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String path="Headings/"+heading.getId()+"/imageUri";
-                Intent intent =new Intent(context, ImageViewActivity.class);
-                intent.putExtra("URI",heading.getImageUri());
-                intent.putExtra("id",heading.getId());
-                intent.putExtra("path",path);
-                context.startActivity(intent);
-            }
-        });
-
-
-
-
-        holder.menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu=new PopupMenu(context,holder.menuButton);
-                popupMenu.inflate(R.menu.item_menu);
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        switch(menuItem.getItemId()){
-
-                            case R.id.deleteMenu:
-                                createDialogForDelete(heading,position);
-                                break;
-
-                            case R.id.changeDetailsMenu:
-                                createDialogForChangeDetails(heading,position);
-                                break;
-
-                        }
-                        return false;
-                    }
-                });
-
-                popupMenu.show();
-            }
+            popupMenu.show();
         });
 
     }
@@ -174,25 +149,17 @@ public class HeadingAdapter extends RecyclerView.Adapter<HeadingAdapter.ViewHold
         alertDialog.setView(linearLayout,5,5,5,5);
 
 
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "CREATE", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name=editTextName.getText().toString();
-                String des=editTextDes.getText().toString();
-                if(name.equals("")){
-                    Toast.makeText(context,"Name cannot be empty",Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    changeNameInDatabase(heading.getId(),position,name,des);
-                }
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "CREATE", (dialog, which) -> {
+            String name=editTextName.getText().toString();
+            String des=editTextDes.getText().toString();
+            if(name.equals("")){
+                Toast.makeText(context,"Name cannot be empty",Toast.LENGTH_SHORT).show();
+            }
+            else{
+                changeNameInDatabase(heading.getId(),position,name,des);
             }
         });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.dismiss();
-            }
-        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", (dialog, which) -> alertDialog.dismiss());
 
         alertDialog.show();
     }
@@ -202,18 +169,8 @@ public class HeadingAdapter extends RecyclerView.Adapter<HeadingAdapter.ViewHold
                 .setTitle("DELETE")
                 .setMessage("Are you sure you want to delete it\n you will loose all the data")
                 .create();
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteHeadingFromDatabase(heading.getId(),position);
-            }
-        });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.dismiss();
-            }
-        });
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> deleteHeadingFromDatabase(heading.getId(),position));
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO", (dialog, which) -> alertDialog.dismiss());
         alertDialog.show();
     }
 

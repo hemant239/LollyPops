@@ -10,10 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -51,15 +48,12 @@ public class LoginActivity extends AppCompatActivity {
 
         initializeViews();
 
-        mSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mVerificationId!=null){
-                    verifyPhoneNumberWithCode();
-                }
-                else{
-                    startPhoneNumberVerification();
-                }
+        mSend.setOnClickListener(v -> {
+            if(mVerificationId!=null){
+                verifyPhoneNumberWithCode();
+            }
+            else{
+                startPhoneNumberVerification();
             }
         });
 
@@ -92,34 +86,31 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential phoneAuthCredential) {
-        mAuth.signInWithCredential(phoneAuthCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    final FirebaseUser mUser=FirebaseAuth.getInstance().getCurrentUser();
-                    if(mUser!=null){
-                        final DatabaseReference mUserDB= FirebaseDatabase.getInstance().getReference().child("Users").child(mUser.getUid());
-                        mUserDB.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if(!snapshot.exists()) {
-                                    Intent intent = new Intent(getApplicationContext(), NewUserDetailsActivity.class);
-                                    intent.putExtra("phoneNumber", mPhoneNumber.getText().toString());
-                                    startActivity(intent);
-                                    finish();
-                                }
-                                else{
-                                    userLoggedIn();
-                                }
+        mAuth.signInWithCredential(phoneAuthCredential).addOnCompleteListener(this, task -> {
+            if(task.isSuccessful()){
+                final FirebaseUser mUser=FirebaseAuth.getInstance().getCurrentUser();
+                if(mUser!=null){
+                    final DatabaseReference mUserDB= FirebaseDatabase.getInstance().getReference().child("Users").child(mUser.getUid());
+                    mUserDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(!snapshot.exists()) {
+                                Intent intent = new Intent(getApplicationContext(), NewUserDetailsActivity.class);
+                                intent.putExtra("phoneNumber", mPhoneNumber.getText().toString());
+                                startActivity(intent);
+                                finish();
                             }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Toast.makeText(getApplicationContext(),"On Cancelled",Toast.LENGTH_SHORT).show();
+                            else{
+                                userLoggedIn();
                             }
-                        });
-                    }
-
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(getApplicationContext(),"On Cancelled",Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
+
             }
         });
     }

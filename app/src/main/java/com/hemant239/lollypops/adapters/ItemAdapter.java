@@ -1,13 +1,9 @@
 package com.hemant239.lollypops.adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,24 +11,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.UploadTask;
 import com.hemant239.lollypops.ImageViewActivity;
-import com.hemant239.lollypops.MainActivity;
 import com.hemant239.lollypops.R;
 import com.hemant239.lollypops.SpecificHeadingActivity;
 import com.hemant239.lollypops.objects.Item;
@@ -41,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
@@ -102,73 +90,53 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             parentList="Completed";
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(holder.linearLayout.getVisibility()==View.GONE){
-                    holder.linearLayout.setVisibility(View.VISIBLE);
-                    holder.description.setVisibility(View.VISIBLE);
-                } else{
-                    holder.linearLayout.setVisibility(View.GONE);
-                    holder.description.setVisibility(View.GONE);
+        holder.itemView.setOnClickListener(v -> {
+            if(holder.linearLayout.getVisibility()==View.GONE){
+                holder.linearLayout.setVisibility(View.VISIBLE);
+                holder.description.setVisibility(View.VISIBLE);
+            } else{
+                holder.linearLayout.setVisibility(View.GONE);
+                holder.description.setVisibility(View.GONE);
+            }
+        });
+
+
+
+        holder.wishList.setOnClickListener(v -> fromCompletedToWishList(item,position));
+
+        holder.completed.setOnClickListener(v -> fromWishListToCompleted(item,position));
+
+
+        holder.imageUri.setOnClickListener(v -> {
+            String path="Headings/"+parentKey+"/"+parentList+"/"+item.getId()+"/imageUri";
+            Intent intent =new Intent(context, ImageViewActivity.class);
+            intent.putExtra("URI",item.getImageUri());
+            intent.putExtra("path",path);
+            intent.putExtra("id",item.getId());
+            context.startActivity(intent);
+        });
+
+
+
+        holder.menuButton.setOnClickListener(v -> {
+            PopupMenu popupMenu=new PopupMenu(context,holder.menuButton);
+            popupMenu.inflate(R.menu.item_menu);
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                switch(menuItem.getItemId()){
+
+                    case R.id.deleteMenu:
+                        createDialogForDelete(item,position);
+                        break;
+
+                    case R.id.changeDetailsMenu:
+                        createDialogForChangeDetails(item,position);
+                        break;
+
                 }
-            }
-        });
+                return false;
+            });
 
-
-
-        holder.wishList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { fromCompletedToWishList(item,position);
-            }
-        });
-
-        holder.completed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { fromWishListToCompleted(item,position);
-            }
-        });
-
-
-        holder.imageUri.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String path="Headings/"+parentKey+"/"+parentList+"/"+item.getId()+"/imageUri";
-                Intent intent =new Intent(context, ImageViewActivity.class);
-                intent.putExtra("URI",item.getImageUri());
-                intent.putExtra("path",path);
-                intent.putExtra("id",item.getId());
-                context.startActivity(intent);
-            }
-        });
-
-
-
-        holder.menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu=new PopupMenu(context,holder.menuButton);
-                popupMenu.inflate(R.menu.item_menu);
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        switch(menuItem.getItemId()){
-
-                            case R.id.deleteMenu:
-                                createDialogForDelete(item,position);
-                                break;
-
-                            case R.id.changeDetailsMenu:
-                                createDialogForChangeDetails(item,position);
-                                break;
-
-                        }
-                        return false;
-                    }
-                });
-
-                popupMenu.show();
-            }
+            popupMenu.show();
         });
 
 
@@ -193,25 +161,17 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         alertDialog.setView(linearLayout,5,5,5,5);
 
 
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "CREATE", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name=editTextName.getText().toString();
-                String des=editTextDes.getText().toString();
-                if(name.equals("")){
-                    Toast.makeText(context,"Name cannot be empty",Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    changeNameInDatabase(item.getId(),position,name,des);
-                }
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "CREATE", (dialog, which) -> {
+            String name=editTextName.getText().toString();
+            String des=editTextDes.getText().toString();
+            if(name.equals("")){
+                Toast.makeText(context,"Name cannot be empty",Toast.LENGTH_SHORT).show();
+            }
+            else{
+                changeNameInDatabase(item.getId(),position,name,des);
             }
         });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.dismiss();
-            }
-        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", (dialog, which) -> alertDialog.dismiss());
 
         alertDialog.show();
 
@@ -222,18 +182,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
                 .setTitle("DELETE")
                 .setMessage("Are you sure you want to delete it\n you will loose all the data")
                 .create();
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteItemFromDatabase(item.getId(),position);
-            }
-        });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.dismiss();
-            }
-        });
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> deleteItemFromDatabase(item.getId(),position));
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO", (dialog, which) -> alertDialog.dismiss());
         alertDialog.show();
 
     }

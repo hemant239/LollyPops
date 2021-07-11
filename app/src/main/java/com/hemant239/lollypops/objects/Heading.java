@@ -1,7 +1,6 @@
 package com.hemant239.lollypops.objects;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class Heading implements Serializable {
